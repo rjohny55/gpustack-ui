@@ -141,6 +141,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const cacheFormData = useRef<any>({});
   const size = Form.useWatch('size', form.current?.form);
   const [activeImgUid, setActiveImgUid] = useState<number>(0);
+  const [originImage, setOriginImage] = useState('');
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -661,6 +662,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     const img = _.get(currentImg, 'dataUrl', '');
     setUploadList(base64List);
     setImage(img);
+    setOriginImage(img);
     setActiveImgUid(_.get(base64List, '[0].uid', ''));
     setImageStatus({
       isOriginal: false,
@@ -692,6 +694,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           imguid={activeImgUid}
           imageStatus={imageStatus}
           imageSrc={image}
+          originImage={originImage}
           disabled={loading}
           onSave={handleOnSave}
           uploadButton={
@@ -736,6 +739,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
     setActiveImgUid(item.uid);
     setImage(item.dataUrl);
+    setOriginImage(item.dataUrl);
     setImageStatus({
       isOriginal: isOrigin,
       isResetNeeded: false,
