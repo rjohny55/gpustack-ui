@@ -22,6 +22,7 @@ type CanvasImageEditorProps = {
   onSave: (imageData: { mask: string | null; img: string }) => void;
   onScaleImageSize?: (data: { width: number; height: number }) => void;
   uploadButton: React.ReactNode;
+  originImage: string;
   imageStatus: {
     isOriginal: boolean;
     isResetNeeded: boolean;
@@ -34,6 +35,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   imageSrc,
   disabled,
   imageStatus,
+  originImage,
   onSave,
   onScaleImageSize,
   imguid,
@@ -495,10 +497,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const download = () => {
-    const canvas = canvasRef.current!;
     const link = document.createElement('a');
     link.download = 'image.png';
-    link.href = canvas.toDataURL('image/png');
+    link.href = originImage;
     link.click();
     link.remove();
   };
@@ -679,14 +680,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       }
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (disabled) {
-  //     overlayCanvasRef.current!.style.pointerEvents = 'none';
-  //   } else {
-  //     overlayCanvasRef.current!.style.pointerEvents = 'auto';
-  //   }
-  // }, [disabled]);
 
   return (
     <div className="editor-wrapper">
