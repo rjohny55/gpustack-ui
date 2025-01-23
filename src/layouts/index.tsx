@@ -265,6 +265,53 @@ export default (props: any) => {
     [collapsed]
   );
 
+  const handleMenuHeaderClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const path = initialState?.currentUser?.is_admin
+        ? '/dashboard'
+        : '/playground';
+      navigate(path);
+    },
+    [initialState?.currentUser?.is_admin]
+  );
+
+  const hanlePageChange = useCallback(
+    (route) => {
+      const { location } = history;
+      const { pathname } = location;
+
+      initRouteCacheValue(pathname);
+      dropRouteCache(pathname);
+
+      // if user is not change password, redirect to change password page
+      if (
+        location.pathname !== loginPath &&
+        userInfo?.require_password_change
+      ) {
+        history.push(loginPath);
+
+        return;
+      }
+
+      // if user is not logged in, redirect to login page
+      if (!initialState?.currentUser && location.pathname !== loginPath) {
+        history.push(loginPath);
+      } else if (location.pathname === '/') {
+        const pathname = initialState?.currentUser?.is_admin
+          ? '/dashboard'
+          : '/playground';
+        history.push(pathname);
+      }
+    },
+    [userInfo?.require_password_change, initialState?.currentUser]
+  );
+
+  const handleOnCollapse = useCallback((collapsed) => {
+    setCollapsed(collapsed);
+  }, []);
+
   const actionRender = useCallback(
     (layoutProps) => {
       const dom = getRightRenderContent({
@@ -298,43 +345,11 @@ export default (props: any) => {
           title: <div style={{ fontSize: 36 }}> gpuStack </div>
         }}
         siderWidth={220}
-        onCollapse={(collapsed) => {
-          setCollapsed(collapsed);
-        }}
-        onMenuHeaderClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          navigate('/');
-        }}
+        onCollapse={handleOnCollapse}
+        onMenuHeaderClick={handleMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
         collapsed={collapsed}
-        onPageChange={(route) => {
-          const { location } = history;
-          const { pathname } = location;
-
-          initRouteCacheValue(pathname);
-          dropRouteCache(pathname);
-
-          // if user is not change password, redirect to change password page
-          if (
-            location.pathname !== loginPath &&
-            userInfo?.require_password_change
-          ) {
-            history.push(loginPath);
-
-            return;
-          }
-
-          // if user is not logged in, redirect to login page
-          if (!initialState?.currentUser && location.pathname !== loginPath) {
-            history.push(loginPath);
-          } else if (location.pathname === '/') {
-            const pathname = initialState?.currentUser?.is_admin
-              ? '/dashboard'
-              : '/playground';
-            history.push(pathname);
-          }
-        }}
+        onPageChange={hanlePageChange}
         formatMessage={formatMessage}
         menu={{
           locale: true
