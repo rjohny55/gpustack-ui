@@ -497,9 +497,10 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const download = () => {
+    const canvas = canvasRef.current!;
     const link = document.createElement('a');
     link.download = 'image.png';
-    link.href = originImage;
+    link.href = canvas.toDataURL('image/png');
     link.click();
     link.remove();
   };
