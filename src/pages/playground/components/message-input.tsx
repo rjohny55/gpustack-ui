@@ -16,7 +16,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import { MessageItem } from '../config/types';
 import '../style/message-input.less';
-import PromptModal from './prompt-modal';
 import ThumbImg from './thumb-img';
 import UploadImg from './upload-img';
 
@@ -105,7 +104,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     {
       handleSubmit,
       handleAbortFetch,
-      presetPrompt,
       clearAll,
       updateLayout,
       addMessage,
@@ -307,10 +305,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       },
       [message, handleDeleteLastImage]
     );
-
-    const handleSelectPrompt = (list: CurrentMessage[]) => {
-      presetPrompt?.(list);
-    };
 
     useImperativeHandle(ref, () => ({
       handleInputChange: handleInputChange
@@ -515,11 +509,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
             ></span>
           )}
         </div>
-        <PromptModal
-          open={open}
-          onCancel={() => setOpen(false)}
-          onSelect={handleSelectPrompt}
-        ></PromptModal>
       </div>
     );
   }
