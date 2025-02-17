@@ -23,6 +23,11 @@ const SearchInput: React.FC<{
     inputRef.current?.focus?.();
   });
 
+  const handleOnChange = (e: any) => {
+    onChange(e);
+    setInputValue(e.target.value);
+  };
+
   useEffect(() => {
     if (!modelContext.search) {
       return;
@@ -37,7 +42,7 @@ const SearchInput: React.FC<{
       style={{ width: 420 }}
       ref={inputRef}
       onPressEnter={onSearch}
-      onChange={onChange}
+      onChange={handleOnChange}
       value={inputValue}
       allowClear
       placeholder={intl.formatMessage(

@@ -75,6 +75,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleSumit = () => {
+    console.log('form.current?.submit====', form.current);
     form.current?.submit?.();
   };
 
@@ -235,10 +236,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           </>
         )}
         <Modal
-          open={showAdvanvce}
+          open={open}
           onCancel={handleShowAdvanceSettings}
           footer={false}
           centered={true}
+          zIndex={showAdvanvce ? 99999 : -1}
           styles={{
             body: {
               height: 'calc(100vh - 146px)',
