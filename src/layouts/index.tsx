@@ -110,7 +110,7 @@ export default (props: any) => {
   const navigate = useNavigate();
   const intl = useIntl();
   const { clientRoutes, pluginManager } = useAppData();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [collapseValue, setCollapseValue] = useState(false);
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
@@ -289,7 +289,7 @@ export default (props: any) => {
       e.stopPropagation();
       e.preventDefault();
       const path = initialState?.currentUser?.is_admin
-        ? '/dashboard'
+        ? '/playground'
         : '/playground';
       navigate(path);
     },
@@ -319,7 +319,7 @@ export default (props: any) => {
         history.push(loginPath);
       } else if (location.pathname === '/') {
         const pathname = initialState?.currentUser?.is_admin
-          ? '/dashboard'
+          ? '/playground'
           : '/playground';
         history.push(pathname);
       }
@@ -364,10 +364,10 @@ export default (props: any) => {
           title: <div style={{ fontSize: 36 }}> gpuStack </div>
         }}
         siderWidth={220}
+        breakpoint={false}
         onCollapse={handleOnCollapse}
         onMenuHeaderClick={handleMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
-        menuExtraRender={renderMenuExtra}
         collapsed={collapsed}
         onPageChange={hanlePageChange}
         formatMessage={formatMessage}

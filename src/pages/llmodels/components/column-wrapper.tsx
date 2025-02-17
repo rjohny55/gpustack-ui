@@ -17,7 +17,7 @@ const ColumnWrapper: React.FC<any> = ({ children, footer, height }) => {
           <div className="column-wrapper">
             <SimpleBar
               style={{
-                maxHeight: height || 'calc(100vh - 89px)',
+                maxHeight: height || 'calc(100vh - 146px)',
                 paddingBottom: '50px'
               }}
             >
@@ -28,7 +28,7 @@ const ColumnWrapper: React.FC<any> = ({ children, footer, height }) => {
         </div>
       ) : (
         <div className="column-wrapper">
-          <SimpleBar style={{ maxHeight: height || 'calc(100vh - 89px)' }}>
+          <SimpleBar style={{ maxHeight: height || 'calc(100vh - 146px)' }}>
             {children}
           </SimpleBar>
         </div>

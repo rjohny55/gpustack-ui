@@ -3,7 +3,7 @@ import MessageInput from '@/pages/playground/components/message-input';
 import MessageContent from '@/pages/playground/components/multiple-chat/message-content';
 import ThumbImg from '@/pages/playground/components/thumb-img';
 import { MessageItem } from '@/pages/playground/config/types';
-import { FileImageOutlined } from '@ant-design/icons';
+import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -96,103 +96,118 @@ const ChatPanel = () => {
   };
 
   return (
-    <div className="chat-panel flex-column flex-between h-100">
-      <div className="chat-main" ref={scroller}>
-        <Header
-          ref={headerRef}
-          onModelChange={handleModelChange}
-          onValuesChange={handleOnValuesChange}
-        ></Header>
-        <Content>
-          {current.categories?.[0] === modelCategoriesMap.llm ? (
-            <>
-              <MessageContent
-                showTitle={false}
-                actions={['copy']}
-                messageStyle="roler"
-                messageList={messageList}
-                setMessageList={setMessageList}
-                editable={true}
-                loading={loading}
-              />
-              {loading && (
-                <Spin size="small">
-                  <div style={{ height: '46px' }}></div>
-                </Spin>
-              )}
-            </>
-          ) : (
-            <>
-              <ThumbImg
-                style={{
-                  padding: 0,
-                  height: '100%',
-                  justifyContent: 'center',
-                  flexDirection: 'column',
-                  flexWrap: 'unset',
-                  alignItems: 'center'
+    <PageContainer
+      className="chat-panel-container"
+      ghost
+      header={{
+        title: (
+          <Header
+            ref={headerRef}
+            onModelChange={handleModelChange}
+            onValuesChange={handleOnValuesChange}
+          ></Header>
+        ),
+        breadcrumb: {}
+      }}
+    >
+      <div
+        className="chat-panel flex-column flex-between"
+        style={{ height: 'calc(100vh - 88px)' }}
+      >
+        <div className="chat-main" ref={scroller}>
+          <Content>
+            {current.categories?.[0] === modelCategoriesMap.llm ? (
+              <>
+                <MessageContent
+                  showTitle={false}
+                  actions={['copy']}
+                  messageStyle="roler"
+                  messageList={messageList}
+                  setMessageList={setMessageList}
+                  editable={true}
+                  loading={loading}
+                />
+                {loading && (
+                  <Spin size="small">
+                    <div style={{ height: '46px' }}></div>
+                  </Spin>
+                )}
+              </>
+            ) : (
+              <>
+                <ThumbImg
+                  style={{
+                    padding: 0,
+                    height: '100%',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    flexWrap: 'unset',
+                    alignItems: 'center'
+                  }}
+                  autoBgColor={false}
+                  editable={false}
+                  dataList={imageList}
+                  responseable={true}
+                  gutter={[8, 16]}
+                  autoSize={true}
+                ></ThumbImg>
+                {/* {!imageList.length && (
+                  <div
+                    className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper"
+                    style={{ height: '100%' }}
+                  >
+                    <span>
+                      <FileImageOutlined className="font-size-32 text-secondary" />
+                    </span>
+                    <span>
+                      {intl.formatMessage({
+                        id: 'playground.params.empty.tips'
+                      })}
+                    </span>
+                  </div>
+                )} */}
+              </>
+            )}
+          </Content>
+        </div>
+        <div className="input-wrapper">
+          <div className="input-textarea">
+            {current.categories?.[0] === modelCategoriesMap.llm ? (
+              <MessageInput
+                actions={['clear', 'upload']}
+                defaultSize={{
+                  minRows: 3,
+                  maxRows: 5
                 }}
-                autoBgColor={false}
-                editable={false}
-                dataList={imageList}
-                responseable={true}
-                gutter={[8, 16]}
-                autoSize={true}
-              ></ThumbImg>
-              {!imageList.length && (
-                <div
-                  className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper"
-                  style={{ height: '100%' }}
-                >
-                  <span>
-                    <FileImageOutlined className="font-size-32 text-secondary" />
-                  </span>
-                  <span>
-                    {intl.formatMessage({ id: 'playground.params.empty.tips' })}
-                  </span>
-                </div>
-              )}
-            </>
-          )}
-        </Content>
-      </div>
-      <div className="input-wrapper">
-        <div className="input-textarea">
-          {current.categories?.[0] === modelCategoriesMap.llm ? (
-            <MessageInput
-              actions={['clear']}
-              defaultSize={{
-                minRows: 3,
-                maxRows: 5
-              }}
-              loading={loading}
-              disabled={!parameters.model}
-              isEmpty={!messageList.length}
-              handleSubmit={handleSendMessage}
-              handleAbortFetch={handleStopConversation}
-              clearAll={handleClear}
-            />
-          ) : (
-            <MessageInput
-              ref={inputRef}
-              actions={['clear']}
-              defaultSize={{
-                minRows: 3,
-                maxRows: 5
-              }}
-              loading={imageLoading}
-              disabled={!parameters.model}
-              isEmpty={!imageList.length}
-              shouldResetMessage={false}
-              handleSubmit={handleCreateImageMessage}
-              handleAbortFetch={handleStopImageConversation}
-              clearAll={handleClearImage}
-              tools={renderTools}
-            />
-          )}
+                loading={loading}
+                disabled={!parameters.model}
+                isEmpty={!messageList.length}
+                handleSubmit={handleSendMessage}
+                handleAbortFetch={handleStopConversation}
+                clearAll={handleClear}
+              />
+            ) : (
+              <MessageInput
+                ref={inputRef}
+                actions={['clear', 'upload']}
+                defaultSize={{
+                  minRows: 3,
+                  maxRows: 5
+                }}
+                loading={imageLoading}
+                disabled={!parameters.model}
+                isEmpty={!imageList.length}
+                shouldResetMessage={false}
+                handleSubmit={handleCreateImageMessage}
+                handleAbortFetch={handleStopImageConversation}
+                clearAll={handleClearImage}
+                tools={renderTools}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 };
 

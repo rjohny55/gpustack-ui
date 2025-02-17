@@ -36,8 +36,9 @@ const ModelCard: React.FC<{
   collapsed: boolean;
   loadingModel?: boolean;
   modelSource: string;
+  files: React.ReactNode;
 }> = (props) => {
-  const { onCollapse, setIsGGUF, collapsed, modelSource } = props;
+  const { onCollapse, setIsGGUF, files, collapsed, modelSource } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [modelData, setModelData] = useState<any>(null);
@@ -336,6 +337,7 @@ const ModelCard: React.FC<{
                   );
                 })}
             </div>
+            <div className="files-wrapper">{files}</div>
             {readmeText && isGGUFModel && (
               <div
                 style={{
@@ -379,6 +381,7 @@ const ModelCard: React.FC<{
           </>
         )}
       </div>
+
       {!isGGUFModel && (
         <Spin spinning={loading}>
           <div style={{ minHeight: 200 }}>

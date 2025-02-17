@@ -54,7 +54,7 @@ const LoginForm = () => {
 
   const gotoDefaultPage = (userInfo: any) => {
     const pathname =
-      userInfo && userInfo?.is_admin ? '/dashboard' : '/playground';
+      userInfo && userInfo?.is_admin ? '/playground' : '/playground';
     history.push(pathname);
   };
   const fetchUserInfo = async () => {

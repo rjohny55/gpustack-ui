@@ -1,7 +1,7 @@
 import IconFont from '@/components/icon-font';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Col, Empty, Row, Spin } from 'antd';
+import { Badge, Button, Col, Empty, Row, Spin } from 'antd';
 import React from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
@@ -87,7 +87,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     );
   };
   return (
-    <SimpleBar style={{ height: 'calc(100vh - 224px)' }}>
+    <SimpleBar style={{ height: 'calc(100vh - 146px)' }}>
       <div style={{ ...props.style }} className="search-result-wrap">
         <Spin spinning={props.loading}>
           <div style={{ minHeight: 200 }}>
@@ -99,17 +99,33 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                       onClick={(e) => handleSelect(e, item)}
                       onKeyDown={(e) => handleOnEnter(e, item)}
                     >
-                      <HFModelItem
-                        source={source}
-                        tags={item.tags}
-                        key={index}
-                        title={item.name}
-                        downloads={item.downloads}
-                        likes={item.likes}
-                        task={item.task}
-                        updatedAt={item.updatedAt}
-                        active={item.id === props.current}
-                      />
+                      {index < 2 ? (
+                        <Badge.Ribbon text="Top pick" color="orange">
+                          <HFModelItem
+                            source={source}
+                            tags={item.tags}
+                            key={index}
+                            title={item.name}
+                            downloads={item.downloads}
+                            likes={item.likes}
+                            task={item.task}
+                            updatedAt={item.updatedAt}
+                            active={item.id === props.current}
+                          />
+                        </Badge.Ribbon>
+                      ) : (
+                        <HFModelItem
+                          source={source}
+                          tags={item.tags}
+                          key={index}
+                          title={item.name}
+                          downloads={item.downloads}
+                          likes={item.likes}
+                          task={item.task}
+                          updatedAt={item.updatedAt}
+                          active={item.id === props.current}
+                        />
+                      )}
                     </div>
                   </Col>
                 ))}

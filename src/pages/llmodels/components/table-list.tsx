@@ -18,18 +18,15 @@ import {
 } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
 import {
-  AudioOutlined,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
   ExperimentOutlined,
-  PictureOutlined,
-  SyncOutlined,
-  WechatWorkOutlined
+  SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import { Button, Dropdown, Input, Select, Space, Tag, message } from 'antd';
+import { Button, Dropdown, Input, Select, Space, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -54,6 +51,7 @@ import {
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
+import ModelTag from './model-tag';
 import UpdateModel from './update-modal';
 import ViewLogsModal from './view-logs-modal';
 
@@ -560,116 +558,6 @@ const Models: React.FC<ModelsProps> = ({
     [handleViewLogs, handleDeleteInstace]
   );
 
-  const renderModelTags = useCallback(
-    (record: ListItem) => {
-      if (record.categories?.includes(modelCategoriesMap.reranker)) {
-        return (
-          <Tag
-            icon={<IconFont type="icon-rank1"></IconFont>}
-            style={{
-              margin: 0,
-              opacity: 1,
-              paddingInline: 8,
-              borderRadius: 12,
-              transform: 'scale(0.9)'
-            }}
-            color="cyan"
-          >
-            Reranker
-          </Tag>
-        );
-      }
-
-      if (record.categories?.includes(modelCategoriesMap.embedding)) {
-        return (
-          <Tag
-            icon={<IconFont type="icon-cube"></IconFont>}
-            style={{
-              margin: 0,
-              opacity: 1,
-              paddingInline: 8,
-              borderRadius: 12,
-              transform: 'scale(0.9)'
-            }}
-            color="purple"
-          >
-            Embedding
-          </Tag>
-        );
-      }
-      if (record.categories?.includes(modelCategoriesMap.text_to_speech)) {
-        return (
-          <Tag
-            icon={<IconFont type="icon-sound-wave"></IconFont>}
-            style={{
-              margin: 0,
-              opacity: 1,
-              paddingInline: 8,
-              borderRadius: 12,
-              transform: 'scale(0.9)'
-            }}
-            color="geekblue"
-          >
-            Text-To-Speech
-          </Tag>
-        );
-      }
-      if (record.categories?.includes(modelCategoriesMap.speech_to_text)) {
-        return (
-          <Tag
-            icon={<AudioOutlined />}
-            style={{
-              margin: 0,
-              opacity: 1,
-              paddingInline: 8,
-              borderRadius: 12,
-              transform: 'scale(0.9)'
-            }}
-            color="processing"
-          >
-            Speech-To-Text
-          </Tag>
-        );
-      }
-      if (record.categories?.includes(modelCategoriesMap.image)) {
-        return (
-          <Tag
-            icon={<PictureOutlined />}
-            style={{
-              margin: 0,
-              opacity: 1,
-              paddingInline: 8,
-              borderRadius: 12,
-              transform: 'scale(0.9)'
-            }}
-            color="orange"
-          >
-            Image
-          </Tag>
-        );
-      }
-      if (record.categories?.includes(modelCategoriesMap.llm)) {
-        return (
-          <Tag
-            icon={<WechatWorkOutlined />}
-            style={{
-              margin: 0,
-              opacity: 1,
-              paddingInline: 8,
-              borderRadius: 12,
-              transform: 'scale(0.9)'
-            }}
-            color="green"
-          >
-            LLM
-          </Tag>
-        );
-      }
-      return null;
-    },
-    [intl]
-  );
-
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
       return (
@@ -858,7 +746,9 @@ const Models: React.FC<ModelsProps> = ({
                   <AutoTooltip ghost>
                     <span className="m-r-5">{text}</span>
                   </AutoTooltip>
-                  {renderModelTags(record)}
+                  <ModelTag
+                    categoryKey={record.categories?.[0] || ''}
+                  ></ModelTag>
                 </span>
               );
             }}

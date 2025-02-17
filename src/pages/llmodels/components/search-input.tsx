@@ -34,6 +34,7 @@ const SearchInput: React.FC<{
 
   return (
     <Input
+      style={{ width: 420 }}
       ref={inputRef}
       onPressEnter={onSearch}
       onChange={onChange}

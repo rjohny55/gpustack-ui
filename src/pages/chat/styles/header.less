@@ -5,14 +5,38 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 56px;
-  padding: 12px;
-  margin-bottom: 12px;
   background-color: var(--color-white-1);
 
   .back-icon {
     padding: 8px;
     border-radius: 4px;
     background-color: var(--ant-color-fill-tertiary);
+  }
+}
+
+.chat-panel-container {
+  .ant-page-header-heading {
+    padding-block-start: 0 !important;
+  }
+
+  .ant-page-header {
+    padding-inline-end: 0;
+    padding-block: 4px;
+  }
+
+  .ant-page-header-heading-left {
+    flex: 1;
+
+    .ant-page-header-heading-title {
+      width: 100%;
+    }
+  }
+
+  .ant-pro-page-container-children-container {
+    padding-block-start: 0;
+  }
+
+  .ant-pro-grid-content-children {
+    height: calc(100vh - 56px);
   }
 }

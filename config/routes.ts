@@ -1,5 +1,12 @@
 export default [
   {
+    name: 'playground',
+    path: '/playground',
+    key: 'chat',
+    icon: 'MessageOutlined',
+    component: './chat'
+  },
+  {
     name: 'dashboard',
     path: '/dashboard',
     key: 'dashboard',
@@ -7,58 +14,59 @@ export default [
     access: 'canSeeAdmin',
     component: './dashboard'
   },
-  {
-    name: 'playground',
-    icon: 'ExperimentOutlined',
-    path: '/playground',
-    key: 'playground',
-    routes: [
-      {
-        path: '/playground',
-        redirect: '/playground/chat'
-      },
-      {
-        name: 'chat',
-        title: 'Chat',
-        path: '/playground/chat',
-        key: 'chat',
-        icon: 'Comment',
-        component: './playground/index'
-      },
-      {
-        name: 'text2images',
-        title: 'Text2Images',
-        path: '/playground/text-to-image',
-        key: 'text2images',
-        icon: 'Comment',
-        component: './playground/images'
-      },
-      {
-        name: 'speech',
-        title: 'Speech',
-        path: '/playground/speech',
-        key: 'speech',
-        icon: 'Comment',
-        component: './playground/speech'
-      },
-      {
-        name: 'embedding',
-        title: 'embedding',
-        path: '/playground/embedding',
-        key: 'embedding',
-        icon: 'Comment',
-        component: './playground/embedding'
-      },
-      {
-        name: 'rerank',
-        title: 'Rerank',
-        path: '/playground/rerank',
-        key: 'rerank',
-        icon: 'Comment',
-        component: './playground/rerank'
-      }
-    ]
-  },
+
+  // {
+  //   name: 'playground',
+  //   icon: 'ExperimentOutlined',
+  //   path: '/playground',
+  //   key: 'playground',
+  //   routes: [
+  //     {
+  //       path: '/playground',
+  //       redirect: '/playground/chat'
+  //     },
+  //     {
+  //       name: 'chat',
+  //       title: 'Chat',
+  //       path: '/playground/chat',
+  //       key: 'chat',
+  //       icon: 'Comment',
+  //       component: './playground/index'
+  //     },
+  //     {
+  //       name: 'text2images',
+  //       title: 'Text2Images',
+  //       path: '/playground/text-to-image',
+  //       key: 'text2images',
+  //       icon: 'Comment',
+  //       component: './playground/images'
+  //     },
+  //     {
+  //       name: 'speech',
+  //       title: 'Speech',
+  //       path: '/playground/speech',
+  //       key: 'speech',
+  //       icon: 'Comment',
+  //       component: './playground/speech'
+  //     },
+  //     {
+  //       name: 'embedding',
+  //       title: 'embedding',
+  //       path: '/playground/embedding',
+  //       key: 'embedding',
+  //       icon: 'Comment',
+  //       component: './playground/embedding'
+  //     },
+  //     {
+  //       name: 'rerank',
+  //       title: 'Rerank',
+  //       path: '/playground/rerank',
+  //       key: 'rerank',
+  //       icon: 'Comment',
+  //       component: './playground/rerank'
+  //     }
+  //   ]
+  // },
   {
     name: 'modelCatalog',
     path: '/models/catalog',
@@ -113,14 +121,6 @@ export default [
     layout: false,
     hideInMenu: true,
     component: './login'
-  },
-  {
-    name: 'chat',
-    path: '/chat',
-    key: 'chat',
-    layout: false,
-    hideInMenu: true,
-    component: './chat'
   },
   {
     name: '404',

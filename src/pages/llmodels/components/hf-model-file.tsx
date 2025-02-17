@@ -1,7 +1,8 @@
+import SealSelect from '@/components/seal-form/seal-select';
 import { convertFileSize } from '@/utils';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Col, Empty, Row, Select, Spin, Tag, Tooltip } from 'antd';
+import { Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import {
@@ -13,7 +14,6 @@ import {
   useRef,
   useState
 } from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryHuggingfaceModelFiles, queryModelScopeModelFiles } from '../apis';
 import { modelSourceMap } from '../config';
@@ -57,10 +57,12 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     }
   ]);
   const axiosTokenRef = useRef<any>(null);
+  const [fileName, setFileName] = useState<string>('');
 
   const handleSelectModelFile = (item: any) => {
     console.log('handleSelectModelFile', item);
     props.onSelectFile?.(item);
+    setFileName(item.fakeName);
     setCurrent(item.path);
   };
 
@@ -259,6 +261,11 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     fetchModelFiles: handleFetchModelFiles
   }));
 
+  const handleFileChange = (val: any, options: any[]) => {
+    const item = dataSource.fileList.find((file: any) => file.fakeName === val);
+    handleSelectModelFile(item);
+  };
+
   useEffect(() => {
     if (!props.selectedModel.name) {
       setDataSource({ fileList: [], loading: false });
@@ -274,12 +281,9 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
 
   return (
     <div className="files-wrap">
-      <TitleWrapper>
-        <span className="title">
-          {intl.formatMessage({ id: 'models.available.files' })} (
-          {dataSource.fileList.length || 0})
-        </span>
-        <Select
+      <TitleWrapper style={{ paddingInline: 0, paddingBlock: '40px 0px' }}>
+        <span className="title">Select Model File</span>
+        {/* <Select
           value={sortType}
           onChange={handleSortChange}
           labelRender={({ label }) => {
@@ -292,7 +296,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           options={modelFilesSortOptions.current}
           size="middle"
           style={{ width: '120px' }}
-        ></Select>
+        ></Select> */}
       </TitleWrapper>
       {dataSource.loading && (
         <div className="spin-wrapper">
@@ -302,83 +306,83 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           ></Spin>
         </div>
       )}
-      <SimpleBar
-        style={{
-          height: collapsed ? 'max-content' : 'calc(100vh - 300px)'
-        }}
-      >
-        <div style={{ padding: '16px 24px' }}>
-          {dataSource.fileList.length ? (
-            <Row gutter={[16, 24]}>
-              {_.map(dataSource.fileList, (item: any) => {
-                return (
-                  <Col span={24} key={item.path}>
-                    <div
-                      className={classNames('hf-model-file', {
-                        active: item.path === current
-                      })}
-                      tabIndex={0}
-                      onClick={() => handleSelectModelFile(item)}
-                      onKeyDown={(e) => handleOnEnter(e, item)}
-                    >
-                      <div className="title">{item.path}</div>
-                      <div className="tags">
-                        <Tag
-                          className="tag-item"
-                          color="green"
-                          style={{
-                            marginRight: 0
-                          }}
-                        >
-                          <span style={{ opacity: 0.65 }}>
-                            {convertFileSize(item.size)}
-                          </span>
-                        </Tag>
-                        {getModelQuantizationType(item)}
-                        {item.parts && item.parts.length > 1 && (
-                          <Tooltip
-                            overlayInnerStyle={{
-                              width: 180,
-                              padding: 0
-                            }}
-                            title={
-                              <FileParts fileList={item.parts}></FileParts>
-                            }
-                          >
-                            <Tag
-                              className="tag-item"
-                              color="purple"
-                              style={{
-                                marginRight: 0
-                              }}
-                            >
-                              <span style={{ opacity: 1 }}>
-                                <InfoCircleOutlined className="m-r-5" />
-                                {item.parts.length} parts
-                              </span>
-                            </Tag>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </div>
-                  </Col>
-                );
-              })}
-            </Row>
-          ) : (
-            !dataSource.loading &&
-            !dataSource.fileList.length && (
-              <Empty
-                imageStyle={{ height: 'auto', marginTop: '20px' }}
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={intl.formatMessage({
-                  id: 'models.search.nofiles'
+
+      <div style={{ padding: '16px 0px' }}>
+        <SealSelect
+          options={dataSource.fileList.map((item: any) => {
+            return {
+              ...item,
+              value: item.fakeName,
+              label: item.fakeName
+            };
+          })}
+          value={fileName}
+          onChange={handleFileChange}
+          optionRender={(data: any, { index }) => {
+            const { data: item } = data;
+            console.log('data======', index, data);
+            return (
+              <div
+                className={classNames('hf-model-file', {
+                  active: ''
                 })}
-              />
-            )
-          )}
-        </div>
-      </SimpleBar>
+                tabIndex={0}
+              >
+                <div className="title">{item.path}</div>
+                <div className="tags">
+                  <Tag
+                    className="tag-item"
+                    color="green"
+                    style={{
+                      marginRight: 0
+                    }}
+                  >
+                    <span style={{ opacity: 0.65 }}>
+                      {convertFileSize(item.size)}
+                    </span>
+                  </Tag>
+                  {getModelQuantizationType(item)}
+                  {item.parts && item.parts.length > 1 && (
+                    <Tooltip
+                      overlayInnerStyle={{
+                        width: 180,
+                        padding: 0
+                      }}
+                      title={<FileParts fileList={item.parts}></FileParts>}
+                    >
+                      <Tag
+                        className="tag-item"
+                        color="purple"
+                        style={{
+                          marginRight: 0
+                        }}
+                      >
+                        <span style={{ opacity: 1 }}>
+                          <InfoCircleOutlined className="m-r-5" />
+                          {item.parts.length} parts
+                        </span>
+                      </Tag>
+                    </Tooltip>
+                  )}
+                  {index > 1 ? (
+                    <Tag
+                      className="tag-item"
+                      color="#f50"
+                      style={{
+                        marginRight: 0
+                      }}
+                    >
+                      <span style={{ opacity: 1 }}>
+                        <WarningOutlined /> Likely too large for your worker
+                      </span>
+                    </Tag>
+                  ) : null}
+                </div>
+              </div>
+            );
+          }}
+        ></SealSelect>
+      </div>
     </div>
   );
 });

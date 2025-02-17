@@ -1,3 +1,4 @@
+import IconFont from '@/components/icon-font';
 import StatusTag from '@/components/status-tag';
 import { PageAction } from '@/config';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
@@ -11,6 +12,7 @@ import {
 } from '@/pages/llmodels/apis';
 import DelopyBuiltInModal from '@/pages/llmodels/components/deploy-builtin-modal';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
+import ModelTag from '@/pages/llmodels/components/model-tag';
 import {
   InstanceStatusMap,
   InstanceStatusMapValue,
@@ -32,12 +34,7 @@ import {
   ImageCustomSizeConfig
 } from '@/pages/playground/config/params-config';
 import useInitMeta from '@/pages/playground/hooks/use-init-meta';
-import {
-  LeftOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  SettingOutlined
-} from '@ant-design/icons';
+import { SearchOutlined, SettingOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Popover, Select, message } from 'antd';
 import _ from 'lodash';
@@ -47,6 +44,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -76,6 +74,7 @@ const Header: React.FC<HeaderProps> = forwardRef((props, ref) => {
   const [optionList, setOptionList] = useState<Global.BaseOption<optionType>[]>(
     []
   );
+  const [optionType, setOptionType] = useState<string>('deployed');
   const [model, setModel] = useState<string | number>('');
   const [currentModel, setCurrentModel] = useState<any>({});
   const selectRef = React.useRef<any>(null);
@@ -95,6 +94,7 @@ const Header: React.FC<HeaderProps> = forwardRef((props, ref) => {
   >([]);
 
   const chunkInstanceRequedtRef = useRef<any>();
+  const [open, setOpen] = useState<boolean>(false);
 
   const [openCatalogDeployModal, setCatalogOpenDeployModal] = useState<any>({
     show: false,
@@ -249,6 +249,9 @@ const Header: React.FC<HeaderProps> = forwardRef((props, ref) => {
   };
 
   const handleModelChange = (value: string | number, item: any) => {
+    if (item.state && item.state !== InstanceStatusMap.Running) {
+      return;
+    }
     const pConfig = generateParamsConfig(item);
     const initialValues = getInitialValues(item);
     setModel(value);
@@ -343,6 +346,7 @@ const Header: React.FC<HeaderProps> = forwardRef((props, ref) => {
 
       setModelList([...list, ...llmList]);
       setOptionList([...list, ...llmList]);
+      setOpen([...list, ...llmList].length === 0);
       const current = list[0] || llmList[0];
       setModel(current.value);
       setCurrentModel(current);
@@ -476,71 +480,112 @@ const Header: React.FC<HeaderProps> = forwardRef((props, ref) => {
   const renderLabel = useCallback(
     (item: any) => {
       const { value } = item;
-      const data: any = modelList.find((item) => item.value === value);
 
       return (
         <span>
-          {/* <Tag bordered={false} className="font-700">
-            {data?.categories?.[0] === modelCategoriesMap.llm ? 'LLM' : 'Image'}
-          </Tag> */}
-          <span className="font-700">{value}</span>
+          {value ? (
+            <span className="font-700 font-size-14">{value}</span>
+          ) : (
+            <span
+              style={{ color: 'var(--ant-color-text)', cursor: 'pointer' }}
+              className="justify-center font-700"
+            >
+              Get Started with Models
+            </span>
+          )}
         </span>
       );
     },
     [optionList]
   );
 
-  useEffect(() => {
-    fetchData();
-    return () => {
-      chunkInstanceRequedtRef.current?.current?.cancel?.();
-    };
-  }, []);
-
-  return (
-    <div className="chat-header">
-      <Button
-        className="button"
-        onClick={handleBack}
-        icon={<LeftOutlined className="font-size-14 back-icon" />}
-        type="text"
+  const renderSearchMoreButton = () => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          gap: 10,
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '16px 0'
+        }}
       >
-        <span className="font-700">Back to Control Center</span>
-      </Button>
+        <div>
+          <Button
+            style={{ borderRadius: 'var(--border-radius-base)', width: 160 }}
+            type="primary"
+            className="font-500"
+            size="small"
+            block
+            onClick={handleSearchMore}
+            icon={<SearchOutlined></SearchOutlined>}
+          >
+            Search more
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const dropOptionList = useMemo(() => {
+    return [...optionList, ...downloadList];
+  }, [optionList, downloadList]);
+
+  const renderSelection = () => {
+    return (
       <Select
+        open={open}
         ref={selectRef}
         labelRender={renderLabel}
         onSearch={debounceFilterData}
         value={model}
+        suffixIcon={
+          optionList.length > 0 ? (
+            <IconFont
+              className="font-size-14 text-secondary"
+              type="icon-down"
+            ></IconFont>
+          ) : null
+        }
         placeholder="select a model"
         className="title"
-        style={{ width: 360 }}
-        variant="borderless"
+        size="middle"
+        style={{ width: 300 }}
+        variant="outlined"
         dropdownRender={() => {
           return (
-            <div
-              style={{ maxHeight: '260px', overflow: 'auto' }}
-              className="custome-scrollbar"
-            >
-              <DropdownPanel
-                options={optionList}
-                onChange={handleModelChange}
-              ></DropdownPanel>
-              {downloadList.length > 0 && (
-                <div>
-                  <div
-                    className="font-size-12 text-tertiary font-500"
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid var(--ant-color-split)'
-                    }}
-                  >
-                    Downloading
-                  </div>
+            <div className="drop-down">
+              {dropOptionList.length > 0 ? (
+                <div
+                  style={{
+                    maxHeight: '260px',
+                    overflow: 'auto',
+                    paddingBlock: 8
+                  }}
+                  className="custome-scrollbar"
+                >
                   <DropdownPanel
-                    options={downloadList}
-                    onChange={handleSelectReadyModel}
+                    options={dropOptionList}
                     renderLabel={(item) => {
+                      console.log('item:', item);
+                      if (!item.state) {
+                        return (
+                          <span
+                            style={{
+                              width: '100%',
+                              paddingBlock: 4,
+                              borderBottom: '1px solid var(--ant-color-split)'
+                            }}
+                          >
+                            {item.label}
+                            <ModelTag
+                              size={18}
+                              categoryKey={item.categories?.[0]}
+                            ></ModelTag>
+                          </span>
+                        );
+                      }
                       return (
                         <div className="flex-between flex-1">
                           <span>{item.label}</span>
@@ -571,71 +616,43 @@ const Header: React.FC<HeaderProps> = forwardRef((props, ref) => {
                         </div>
                       );
                     }}
+                    onChange={handleModelChange}
                   ></DropdownPanel>
                 </div>
-              )}
-              {catalogList.length > 0 && (
-                <div>
-                  <div
-                    className="font-size-12 text-tertiary font-500"
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid var(--ant-color-split)'
-                    }}
-                  >
-                    from catalog
-                  </div>
-                  <DropdownPanel
-                    options={catalogList}
-                    onChange={handleClickCatalog}
-                    renderLabel={(item) => {
-                      return (
-                        <div className="flex-between flex-1">
-                          <span>{item.label}</span>
-                          <Button
-                            onClick={() => handleOnDeploy(item)}
-                            size="small"
-                            icon={<PlusOutlined></PlusOutlined>}
-                          >
-                            Add
-                          </Button>
-                        </div>
-                      );
-                    }}
-                  ></DropdownPanel>
-                </div>
-              )}
-              {optionList.length === 0 && catalogList.length === 0 && (
-                <div
+              ) : (
+                <span
+                  className="justify-center text-secondary"
                   style={{
-                    display: 'flex',
-                    width: '100%',
-                    gap: 10,
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: '10px 0'
+                    paddingBlock: 16
                   }}
                 >
-                  <span>No results found</span>
-                  <div>
-                    <Button
-                      className="font-500"
-                      size="middle"
-                      block
-                      onClick={handleSearchMore}
-                      icon={<SearchOutlined></SearchOutlined>}
-                    >
-                      Search more for{' '}
-                      <span className="font-700">{searchValue}</span>
-                    </Button>
-                  </div>
-                </div>
+                  No models deployed yet!
+                </span>
               )}
+              {renderSearchMoreButton()}
             </div>
           );
         }}
         showSearch
       ></Select>
+    );
+  };
+  useEffect(() => {
+    fetchData();
+    return () => {
+      chunkInstanceRequedtRef.current?.current?.cancel?.();
+    };
+  }, []);
+
+  return (
+    <div className="chat-header">
+      <div></div>
+      <div className="relative">
+        <div className="flex align-center gap-8 ">
+          <IconFont type="icon-fenxiang" className="text-secondary"></IconFont>
+          {renderSelection()}
+        </div>
+      </div>
 
       <Popover
         placement="bottomRight"
@@ -666,9 +683,7 @@ const Header: React.FC<HeaderProps> = forwardRef((props, ref) => {
           className="settings"
           icon={<SettingOutlined></SettingOutlined>}
           type="text"
-        >
-          <span className="font-700">Settings</span>
-        </Button>
+        ></Button>
       </Popover>
       <ModelContext.Provider value={{ search: searchValue }}>
         <DeployModal

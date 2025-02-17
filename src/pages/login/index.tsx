@@ -21,7 +21,7 @@ const Login = () => {
         currentUser: userInfo
       }));
     }
-    const pathname = userInfo?.is_admin ? '/dashboard' : '/playground';
+    const pathname = userInfo?.is_admin ? '/playground' : '/playground';
 
     history.push(pathname, { replace: true });
   };

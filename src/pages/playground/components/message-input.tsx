@@ -435,21 +435,21 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 }
               >
                 <Button
-                  style={{ width: 46 }}
                   type="primary"
                   onClick={handleSendMessage}
                   size="middle"
+                  shape="circle"
                   disabled={isDisabled}
                 >
                   {submitIcon ?? (
-                    <SendOutlined rotate={0} className="font-size-14" />
+                    <SendOutlined rotate={-90} className="font-size-14" />
                   )}
                 </Button>
               </Tooltip>
             ) : (
               <Button
-                style={{ width: 46 }}
                 type="primary"
+                shape="circle"
                 onClick={onStop}
                 size="middle"
                 icon={

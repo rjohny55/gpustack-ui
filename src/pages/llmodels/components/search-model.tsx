@@ -1,8 +1,8 @@
-import { BulbOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Checkbox, Select, Tooltip } from 'antd';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { queryHuggingfaceModels, queryModelScopeModels } from '../apis';
 import {
   HuggingFaceTaskMap,
@@ -14,10 +14,12 @@ import {
 } from '../config';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
-import SearchResult from './search-result';
 
 interface SearchInputProps {
   modelSource: string;
+  dataSource: any;
+  setDataSource: (data: any) => void;
+  setCurrent: (id: string) => void;
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any) => void;
@@ -26,23 +28,30 @@ interface SearchInputProps {
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   const intl = useIntl();
 
-  const { modelSource, setLoadingModel, onSelectModel } = props;
-  const [dataSource, setDataSource] = useState<{
-    repoOptions: any[];
-    loading: boolean;
-    networkError: boolean;
-    sortType: string;
-  }>({
-    repoOptions: [],
-    loading: false,
-    networkError: false,
-    sortType: ModelSortType.trendingScore
-  });
+  const {
+    modelSource,
+    dataSource,
+    setLoadingModel,
+    onSelectModel,
+    setCurrent,
+    setDataSource
+  } = props;
+  // const [dataSource, setDataSource] = useState<{
+  //   repoOptions: any[];
+  //   loading: boolean;
+  //   networkError: boolean;
+  //   sortType: string;
+  // }>({
+  //   repoOptions: [],
+  //   loading: false,
+  //   networkError: false,
+  //   sortType: ModelSortType.trendingScore
+  // });
   const SUPPORTEDSOURCE = [
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
   ];
-  const [current, setCurrent] = useState<string>('');
+  // const [current, setCurrent] = useState<string>('');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
@@ -228,73 +237,80 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   const renderHFSearch = () => {
     return (
-      <>
-        <SearchInput
-          onSearch={handlerSearchModels}
-          onChange={handleSearchInputChange}
-          modelSource={modelSource}
-        ></SearchInput>
-        <div className="gguf-tips">
-          <span>
-            {intl.formatMessage({ id: 'models.form.search.gguftips' })}
-          </span>
-        </div>
-        <div className={SearchStyle.filter}>
-          <span>
+      <div>
+        <div className="flex-center">
+          <SearchInput
+            onSearch={handlerSearchModels}
+            onChange={handleSearchInputChange}
+            modelSource={modelSource}
+          ></SearchInput>
+
+          <div className={SearchStyle.filter}>
+            {/* <span>
             <span className="value">
               {intl.formatMessage(
                 { id: 'models.search.result' },
                 { count: dataSource.repoOptions.length }
               )}
             </span>
-          </span>
-          <span>
-            <span id="filterGGUF">
-              <Checkbox
-                onChange={handleFilterGGUFChange}
-                className="m-r-5"
-                checked={filterGGUFRef.current}
-              >
-                <Tooltip
-                  overlayInnerStyle={{ width: 'max-content' }}
-                  title={
-                    <ul className="tips-desc-list">
-                      <li>
-                        {intl.formatMessage({ id: 'models.search.gguf.tips' })}
-                      </li>
-                      <li>
-                        {intl.formatMessage({ id: 'models.search.vllm.tips' })}
-                      </li>
-                      <li>
-                        {intl.formatMessage({
-                          id: 'models.search.voxbox.tips'
-                        })}
-                      </li>
-                    </ul>
-                  }
+          </span> */}
+            <span>
+              <span id="filterGGUF">
+                <Checkbox
+                  onChange={handleFilterGGUFChange}
+                  className="m-r-5"
+                  checked={filterGGUFRef.current}
                 >
-                  GGUF
-                  <QuestionCircleOutlined className="m-l-4" />
-                </Tooltip>
-              </Checkbox>
+                  <Tooltip
+                    overlayInnerStyle={{ width: 'max-content' }}
+                    title={
+                      <ul className="tips-desc-list">
+                        <li>
+                          {intl.formatMessage({
+                            id: 'models.search.gguf.tips'
+                          })}
+                        </li>
+                        <li>
+                          {intl.formatMessage({
+                            id: 'models.search.vllm.tips'
+                          })}
+                        </li>
+                        <li>
+                          {intl.formatMessage({
+                            id: 'models.search.voxbox.tips'
+                          })}
+                        </li>
+                      </ul>
+                    }
+                  >
+                    GGUF
+                    <QuestionCircleOutlined className="m-l-4" />
+                  </Tooltip>
+                </Checkbox>
+              </span>
+              <Select
+                value={dataSource.sortType}
+                onChange={handleSortChange}
+                labelRender={({ label }) => {
+                  return (
+                    <span>
+                      {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
+                    </span>
+                  );
+                }}
+                options={modelFilesSortOptions.current}
+                size="middle"
+                style={{ width: '150px' }}
+              ></Select>
             </span>
-            <Select
-              value={dataSource.sortType}
-              onChange={handleSortChange}
-              labelRender={({ label }) => {
-                return (
-                  <span>
-                    {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
-                  </span>
-                );
-              }}
-              options={modelFilesSortOptions.current}
-              size="middle"
-              style={{ width: '150px' }}
-            ></Select>
-          </span>
+          </div>
         </div>
-      </>
+        {/* <div className="gguf-tips">
+          <span>
+            {intl.formatMessage({ id: 'models.form.search.gguftips' })}
+          </span>
+        </div> */}
+      </div>
     );
   };
 
@@ -311,30 +327,15 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   return (
     <div style={{ flex: 1 }}>
-      <div className={SearchStyle['search-bar']}>
-        {SUPPORTEDSOURCE.includes(modelSource) ? (
-          renderHFSearch()
-        ) : (
-          <div style={{ lineHeight: '18px' }}>
-            <BulbOutlined className="font-size-14 m-r-5" />
-            {intl.formatMessage(
-              { id: 'model.form.ollamatips' },
-              { name: intl.formatMessage({ id: 'model.form.ollama.model' }) }
-            )}
-          </div>
-        )}
-      </div>
-
-      {
-        <SearchResult
-          loading={dataSource.loading}
-          resultList={dataSource.repoOptions}
-          networkError={dataSource.networkError}
-          current={current}
-          source={modelSource}
-          onSelect={handleOnSelectModel}
-        ></SearchResult>
-      }
+      <div className={SearchStyle['search-bar']}>{renderHFSearch()}</div>
+      {/* <SearchResult
+        loading={dataSource.loading}
+        resultList={dataSource.repoOptions}
+        networkError={dataSource.networkError}
+        current={current}
+        source={modelSource}
+        onSelect={handleOnSelectModel}
+      ></SearchResult> */}
     </div>
   );
 };
